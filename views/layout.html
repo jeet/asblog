@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="author" content="Luka Cvrk (www.solucija.com)"/>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+
+    <link rel="stylesheet" media="screen,projection" type="text/css"
+          href="{{=URL(r=request,c='static',f='css/style.css')}}"/>
+    <title>Ajay Maurya</title>
+</head>
+<body>
+<div id="content">
+    <h1><span class="hr">watch</span>this!</h1>
+    <ul id="top">
+        <li><a class="current" href="#">Home</a></li>
+        <li><a href="#">New Stuff</a></li>
+        <li><a href="#">Interviews</a></li>
+        <li><a href="#">Startups</a></li>
+    </ul>
+
+    <div id="intro">
+        <p>Phasellus augue diam, <a href="#">vestibulum non</a>, iaculis eget, tristique sed, lectus. Sed pede. Nullam
+            egestas ante a mauris. Aliquam metus turpis, luctus ac, sagittis eget, <a href="#">elementum tincidunt</a>,
+            massa.</p>
+    </div>
+    <div id="left">
+        {{if response.flash:}}
+        <div id="flash">{{=response.flash}}</div>
+        {{pass}}
+        {{include}}
+    </div>
+    <div id="right">
+        <ul>
+            {{if session.authorized:}}
+            <li>{{=A('post news',_href=URL(r=request,f='post'))}}</li>
+            <li>{{=A('logout',_href=URL(r=request,f='logout'))}}</li>
+            {{else:}}
+            <li>{{=A('register',_href=URL(r=request,f='register'))}}</li>
+            <li>{{=A('login',_href=URL(r=request,f='login'))}}</li>
+            {{pass}}
+        </ul>
+        <h3>Categories</h3>
+        <ul>
+            {{for category in session.categories:}}
+            <li>{{=A(category.replace('_',' '),_href=URL(r=request,f='index',args=[category]))}}</li>
+            {{pass}}
+        </ul>
+
+
+        <h3>Popular Stuff</h3>
+        <a href="#"><img src="images/site.gif" alt="site"/></a>
+        <a href="#"><img src="images/site.gif" alt="site"/></a>
+        <a href="#"><img src="images/site.gif" alt="site"/></a>
+        <a href="#"><img src="images/site.gif" alt="site"/></a>
+        <a href="#"><img src="images/site.gif" alt="site"/></a>
+        <a href="#"><img src="images/site.gif" alt="site"/></a>
+        <br/><br/>
+
+        <h3>Latest Comments</h3>
+        <ul>
+            <li><a href="#">In cursus rhoncus ante. Quisque...</a></li>
+            <li><a href="#">Mauris magna sem, pellentesque sit am...</a></li>
+            <li><a href="#">Nullam egestas ante a mauris. Aliqu...</a></li>
+            <li><a href="#">Etiam blandit ultricies nisl. Nullam...</a></li>
+            <li><a href="#">In cursus rhoncus ante. Quisque...</a></li>
+            <li><a href="#">Mauris magna sem, pellentesque sit am...</a></li>
+            <li><a href="#">Nullam egestas ante a mauris. Aliqu...</a></li>
+        </ul>
+    </div>
+    <div id="footer">
+        <p>Design: <a href="http://www.solucija.com/" title="Information Architecture and Web Design">Luka Cvrk</a></p>
+    </div>
+</div>
+</body>
+</html>
