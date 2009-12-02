@@ -9,28 +9,49 @@
 {{if page<3 and len(post)>50:}}[{{=A('next',_href=URL(r=request,args=[category,sort,page+1]))}}]{{pass}}
 
 <table>
-{{for k,item in enumerate(post):}}{{if k==50: continue}}
-<tr><td>
-  <table border="0" cellpadding="0" cellspacing="0">
-  <tr><td style="height:10px">{{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote',args=['up',item.id]))}}</td></tr>
-  <tr height="10px"><td class="score">{{=item.score}}</td></tr>
-  <tr><td>{{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote',args=['down',item.id]))}}</td></tr>
-  </table>
-</td><td>
-  <table>
-  <tr><td class="article">
-  {{if item.url.strip().lower()=='self':}}
-    {{=A(item.title.upper(),_href=URL(r=request,f='comments',args=[item.id]))}}
-  {{else:}}
-    {{=A(item.title.upper(),_href=URL(r=request,f='bookmark',args=[item.id]))}}
-  {{pass}}
-  </td></tr>
-  <tr><td>submitted {{=timesince(item.post_time,now)}} ago by {{=A(item.author_alias,_href=URL(r=request,f='person',args=[item.author]))}}
-  </td></tr>
-  <tr><td>
-  {{=A('%i comments'%item.comments,_href=URL(r=request,f='comments',args=[item.id]))}} {{=A('report',_href=URL(r=request,f='report',args=[item.id]))}} {{if item.author==session.authorized:}} {{=A('delete',_href=URL(r=request,f='delete',args=[item.id]))}} {{pass}}
-  </td></tr>
-  </table>
-</td></tr>
-{{pass}}
+    {{for k,item in enumerate(post):}}{{if k==50: continue}}
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="height:10px">
+                        {{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote',args=['up',item.id]))}}
+                    </td>
+                </tr>
+                <tr height="10px"></tr>
+                <tr>
+                    <td>
+                        {{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote',args=['down',item.id]))}}
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table>
+                <tr>
+                    <td class="article">
+                        {{if item.url.strip().lower()=='self':}}
+                        {{=A(item.title.upper(),_href=URL(r=request,f='comments',args=[item.id]))}}
+                        {{else:}}
+                        {{=A(item.title.upper(),_href=URL(r=request,f='bookmark',args=[item.id]))}}
+                        {{pass}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>submitted {{=timesince(item.post_time,now)}} ago by
+                        {{=A(item.author_alias,_href=URL(r=request,f='person',args=[item.author]))}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{=A('%i comments'%item.comments,_href=URL(r=request,f='comments',args=[item.id]))}}
+                        {{=A('report',_href=URL(r=request,f='report',args=[item.id]))}} {{if
+                        item.author==session.authorized:}}
+                        {{=A('delete',_href=URL(r=request,f='delete',args=[item.id]))}} {{pass}}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {{pass}}
 </table>

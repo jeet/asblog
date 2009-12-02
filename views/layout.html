@@ -31,13 +31,13 @@
     </div>
     <div id="right">
         <ul>
-            {{if session.authorized:}}
+            <!--{{if session.authorized:}}-->
             <li>{{=A('post news',_href=URL(r=request,f='post'))}}</li>
             <li>{{=A('logout',_href=URL(r=request,f='logout'))}}</li>
-            {{else:}}
+            <!--{{else:}}-->
             <li>{{=A('register',_href=URL(r=request,f='register'))}}</li>
             <li>{{=A('login',_href=URL(r=request,f='login'))}}</li>
-            {{pass}}
+            <!--{{pass}}-->
         </ul>
         <h3>Categories</h3>
         <ul>

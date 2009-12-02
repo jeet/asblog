@@ -6,27 +6,27 @@ if not session.categories:
 def register():
     form=SQLFORM(db.person,fields=['alias', 'email','password'])
     if form.accepts(request.vars,session):
-          session.authorized=form.vars.id
-          session.email=form.vars.email
-          session.alias=form.vars.alias
-          session.flash='user registered'
-          redirect(URL(r=request,f='index'))
+        session.authorized=form.vars.id
+        session.email=form.vars.email
+        session.alias=form.vars.alias
+        session.flash='user registered'
+        redirect(URL(r=request,f='index'))
     return dict(form=form)
 
 def login():
-    db.person.email.requires=IS_NOT_EMPTY()    
+    db.person.email.requires=IS_NOT_EMPTY()
     form=SQLFORM(db.person,fields=['email','password'])
     if FORM.accepts(form,request.vars,session):
-       users=db(db.person.email==form.vars.email)\
+        users=db(db.person.email==form.vars.email)\
                (db.person.password==form.vars.password).select()
-       if len(users):
-          session.authorized=users[0].id
-          session.email=users[0].email
-          session.alias=users[0].alias
-          session.flash='user logged in'
-          redirect(URL(r=request,f='index'))
-       else:
-          form.errors['password']='invdalid password'
+        if len(users):
+            session.authorized=users[0].id
+            session.email=users[0].email
+            session.alias=users[0].alias
+            session.flash='user logged in'
+            redirect(URL(r=request,f='index'))
+        else:
+            form.errors['password']='invdalid password'
     return dict(form=form)
 
 def logout():
@@ -38,12 +38,12 @@ def logout():
 
 def index():
     sorts={'new':~db.post.post_time,
-           'hot':~db.post.hotness,
-           'score':~db.post.score}
+           'hot':~db.post.hotness
+    }
     try: page=int(request.args[2])
     except: page=0
     try: sort=request.args[1]
-    except: sort='hot' 
+    except: sort='hot'
     orderby=sorts[sort]
     try: category=request.args[0]
     except: category='politics'
@@ -58,7 +58,7 @@ def bookmark():
     redirect(item.url)
 
 ##Commented  logged in     
-def post(): 
+def post():
 #    if not session.authorized:
 #        redirect(URL(r=request,f='login'))
     form=SQLFORM(db.post,fields=['url','title','category','content'])
@@ -78,7 +78,7 @@ def report():
     redirect(request.env.http_referer)
 
 def delete():
-    if not session.authorized: redirect(request.env.http_referer)
+#    if not session.authorized: redirect(request.env.http_referer)
     try:
         post=db(db.post.id==request.args[0]).select()[0]
         if post.author==session.authorized:
@@ -92,9 +92,9 @@ def vote():
     if not session.authorized: redirect(request.env.http_referer)
     post=db(db.post.id==request.args[1]).select()[0]
     if request.args[0]=='up':
-       post.update_record(score=post.score+1)
+        post.update_record(score=post.score+1)
     elif request.args[0]=='down':
-       post.update_record(score=post.score-1)
+        post.update_record(score=post.score-1)
     redirect(request.env.http_referer)
 
 def permalink():
@@ -111,15 +111,15 @@ def permalink():
         else: tree[c.parente].append(c)
         if c.id==comment.id: pivot=c.parente
         if session.authorized:
-           f=SQLFORM(db.comment,fields=['body'],labels={'body':''})
-           f.vars.author=session.authorized          
-           f.vars.author_alias=session.alias
-           f.vars.post=post
-           f.vars.parente=c.id
-           if f.accepts(request.vars,formname=str(c.id)):
-              session.flash='comment posted'
-              redirect(URL(r=request,args=request.args))
-           forms[c.id]=f
+            f=SQLFORM(db.comment,fields=['body'],labels={'body':''})
+            f.vars.author=session.authorized
+            f.vars.author_alias=session.alias
+            f.vars.post=post
+            f.vars.parente=c.id
+            if f.accepts(request.vars,formname=str(c.id)):
+                session.flash='comment posted'
+                redirect(URL(r=request,args=request.args))
+            forms[c.id]=f
     tree[pivot]=[comment]
     response.view='default/comments.html'
     return dict(item=None,form=None,tree=tree,forms=forms,parent=pivot)
@@ -128,9 +128,9 @@ def vote_comment():
     if not session.authorized: redirect(request.env.http_referer)
     comment=db(db.comment.id==request.args[1]).select()[0]
     if request.args[0]=='up':
-       comment.update_record(score=comment.score+1)
+        comment.update_record(score=comment.score+1)
     elif request.args[0]=='down':
-       comment.update_record(score=comment.score-1)
+        comment.update_record(score=comment.score-1)
     redirect(request.env.http_referer)
 
 def report_comment():
@@ -145,7 +145,6 @@ def person():
     session.flash='sorry, not yet implemented'
     redirect(request.env.http_referer)
 
-
 def comments():
     try: post=int(request.args[0])
     except: redirect(URL(r=request,f='index'))
@@ -154,7 +153,7 @@ def comments():
         form.vars.author=session.authorized
         form.vars.author_alias=session.alias
         form.vars.post=post
-        if form.accepts(request.vars,formname='0'): 
+        if form.accepts(request.vars,formname='0'):
             response.flash='comment posted'
     else: form=None
     try:
@@ -168,15 +167,15 @@ def comments():
         if not tree.has_key(c.parente): tree[c.parente]=[c]
         else: tree[c.parente].append(c)
         if session.authorized:
-           f=SQLFORM(db.comment,fields=['body'],labels={'body':''})
-           f.vars.author=session.authorized          
-           f.vars.author_alias=session.alias
-           f.vars.post=post
-           f.vars.parente=c.id
-           if f.accepts(request.vars,formname=str(c.id)):
-              session.flash='comment posted'
-              redirect(URL(r=request,args=request.args))
-           forms[c.id]=f
+            f=SQLFORM(db.comment,fields=['body'],labels={'body':''})
+            f.vars.author=session.authorized
+            f.vars.author_alias=session.alias
+            f.vars.post=post
+            f.vars.parente=c.id
+            if f.accepts(request.vars,formname=str(c.id)):
+                session.flash='comment posted'
+                redirect(URL(r=request,args=request.args))
+            forms[c.id]=f
     return dict(item=item,form=form,tree=tree,forms=forms,parent=0)
 
 def edit_comment():

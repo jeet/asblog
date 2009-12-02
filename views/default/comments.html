@@ -1,71 +1,127 @@
 {{extend 'layout.html'}}
 {{from gluon.contrib.markdown import WIKI}}
 <script>
-function toggle(id) {
-  $(".postrow").hide();
-  $("#post"+id).show();
-}
-function closerow(id) {
-  $("#post"+id).hide();
-}
+    function toggle(id) {
+        $(".postrow").hide();
+        $("#post" + id).show();
+    }
+    function closerow(id) {
+        $("#post" + id).hide();
+    }
 </script>
 
 {{def listcomments(id):}}
 {{if not tree.has_key(id): return}}
 <table>
-{{for item in tree[id]:}}
-<tr><td>
-  <table border="0" cellpadding="0" cellspacing="0">
-  <tr><td>{{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote_comment',args=['up',item.id]))}}</td></tr>
-  <tr><td class="score">{{=item.score}}</td></tr>
-  <tr><td>{{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote_comment',args=['down',item.id]))}}</td></tr>
-  </table>
-</td><td>
-   <table>
-   <tr><td>{{=A(item.author_alias,_href=URL(r=request,f='person',args=[item.author]))}} {{=timesince(item.post_time,now)}} ago said:</td></tr>
-   <tr><td>{{=WIKI(item.body.strip())}}</td></tr>
-   <tr><td>{{=A('permalink',_href=URL(r=request,f='permalink',args=[item.id]))}} {{=A('report',_href=URL(r=request,f='report_comment',args=[item.id]))}} {{=A('reply',_href="javascript:toggle(%i)"%item.id if session.authorized else URL(r=request,f='login'))}} {{if item.author==session.authorized:}}{{=A('edit',_href=URL(r=request,f='edit_comment',args=[item.id]))}} {{pass}}</td></tr>
-{{if forms:}}<tr class="postrow" id="post{{=item.id}}"><td>{{=forms[item.id]}}
-<div style="text-align:right">
-<a href="http://en.wikipedia.org/wiki/Markdown#Syntax_examples" target="_blank">help</a> <a href="javascript:closerow({{=item.id}})">close</a></div>
-</td></tr>{{pass}}
-   <tr><td>{{listcomments(item.id)}}</td></tr>
-   </table>
-   <script>$("#post{{=item.id}}").hide()</script>
-</td></tr>
-{{pass}}
+    {{for item in tree[id]:}}
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        {{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote_comment',args=['up',item.id]))}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="score">{{=item.score}}</td>
+                </tr>
+                <tr>
+                    <td>
+                        {{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote_comment',args=['down',item.id]))}}
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table>
+                <tr>
+                    <td>{{=A(item.author_alias,_href=URL(r=request,f='person',args=[item.author]))}}
+                        {{=timesince(item.post_time,now)}} ago said:
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{=WIKI(item.body.strip())}}</td>
+                </tr>
+                <tr>
+                    <td>{{=A('permalink',_href=URL(r=request,f='permalink',args=[item.id]))}}
+                        {{=A('report',_href=URL(r=request,f='report_comment',args=[item.id]))}}
+                        {{=A('reply',_href="javascript:toggle(%i)"%item.id if session.authorized else
+                        URL(r=request,f='login'))}} {{if
+                        item.author==session.authorized:}}{{=A('edit',_href=URL(r=request,f='edit_comment',args=[item.id]))}}
+                        {{pass}}
+                    </td>
+                </tr>
+                {{if forms:}}
+                <tr class="postrow" id="post{{=item.id}}">
+                    <td>{{=forms[item.id]}}
+                        <div style="text-align:right">
+                            <a href="http://en.wikipedia.org/wiki/Markdown#Syntax_examples" target="_blank">help</a> <a
+                                href="javascript:closerow({{=item.id}})">close</a></div>
+                    </td>
+                </tr>
+                {{pass}}
+                <tr>
+                    <td>{{listcomments(item.id)}}</td>
+                </tr>
+            </table>
+            <script>$("#post{{=item.id}}").hide()</script>
+        </td>
+    </tr>
+    {{pass}}
 </table>
 {{return}}
 
 {{if item:}}
-<table><tr><td>
-   <table border="0" cellpadding="0" cellspacing="0">
-  <tr><td>{{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote',args=['up',item.id]))}}</td></tr>
-  <tr><td class="score">{{=item.score}}</td></tr>
-  <tr><td>{{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote',args=['down',item.id]))}}</td></tr>
-  </table>
-</td><td>
-  <table>
-  <tr><td class="article">
-  {{if item.url.strip().lower()=='self':}}
-    {{=A(item.title.upper(),_href=URL(r=request,f='comments',args=[item.id]))}}
-  {{else:}}
-    {{=A(item.title.upper(),_href=URL(r=request,f='bookmark',args=[item.id]))}}
-  {{pass}}
-  </td></tr>
-  <tr><td>submitted {{=timesince(item.post_time,now)}} ago by {{=A(item.author_alias,_href=URL(r=request,f='person',args=[item.author]))}}
-  </td></tr>
-  <tr><td>
-{{=A('report',_href=URL(r=request,f='report',args=[item.id]))}} {{if item.author==session.authorized:}} {{=A('delete',_href=URL(r=request,f='delete',args=[item.id]))}} {{pass}}
-  </td></tr>
-  </table>
-</td></tr></table>
+<table>
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        {{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote',args=['up',item.id]))}}
+                    </td>
+                </tr>
+                <tr></tr>
+                <tr>
+                    <td>
+                        {{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote',args=['down',item.id]))}}
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table>
+                <tr>
+                    <td class="article">
+                        {{if item.url.strip().lower()=='self':}}
+                        {{=A(item.title.upper(),_href=URL(r=request,f='comments',args=[item.id]))}}
+                        {{else:}}
+                        {{=A(item.title.upper(),_href=URL(r=request,f='bookmark',args=[item.id]))}}
+                        {{pass}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>submitted {{=timesince(item.post_time,now)}} ago by
+                        {{=A(item.author_alias,_href=URL(r=request,f='person',args=[item.author]))}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{=A('report',_href=URL(r=request,f='report',args=[item.id]))}} {{if
+                        item.author==session.authorized:}}
+                        {{=A('delete',_href=URL(r=request,f='delete',args=[item.id]))}} {{pass}}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 {{pass}}
 
 {{if form:}}
 <h1>Comments</h1>
 {{=form}}
 <div style="text-align: right">
-<a href="http://en.wikipedia.org/wiki/Markdown#Syntax_examples" target="_blank">help</a></div>{{pass}}
+    <a href="http://en.wikipedia.org/wiki/Markdown#Syntax_examples" target="_blank">help</a></div>{{pass}}
 
 {{listcomments(parent)}}
