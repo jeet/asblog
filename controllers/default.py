@@ -1,4 +1,4 @@
-response.title="Reddish"
+response.title="Ajay Maurya's Blog"
 
 if not session.categories:
     session.categories=[r.name for r in db().select(db.category.ALL)]
@@ -37,9 +37,9 @@ def logout():
     redirect(URL(r=request,f='index'))
 
 def index():
-    sorts={'new':~db.news.post_time,
-           'hot':~db.news.hotness,
-           'score':~db.news.score}
+    sorts={'new':~db.post.post_time,
+           'hot':~db.post.hotness,
+           'score':~db.post.score}
     try: page=int(request.args[2])
     except: page=0
     try: sort=request.args[1]
@@ -48,19 +48,20 @@ def index():
     try: category=request.args[0]
     except: category='politics'
     limitby=(50*page,50*(page+1)+1)
-    news=db(db.news.category==category).select(orderby=orderby,limitby=limitby)
-    return dict(category=category,news=news,sort=sort,sorts=sorts.keys(),page=page)
+    post=db(db.post.category==category).select(orderby=orderby,limitby=limitby)
+    return dict(category=category,post=post,sort=sort,sorts=sorts.keys(),page=page)
 
 def bookmark():
-    try: item=db(db.news.id==request.args[0]).select()[0]
+    try: item=db(db.post.id==request.args[0]).select()[0]
     except: redirect(URL(r=request,f='index'))
     item.update_record(clicks=item.clicks+1)
     redirect(item.url)
 
+##Commented  logged in     
 def post(): 
-    if not session.authorized:
-        redirect(URL(r=request,f='login'))
-    form=SQLFORM(db.news,fields=['url','title','category'])
+#    if not session.authorized:
+#        redirect(URL(r=request,f='login'))
+    form=SQLFORM(db.post,fields=['url','title','category','content'])
     form.vars.author=session.authorized
     form.vars.author_alias=session.alias
     if form.accepts(request.vars,session):
@@ -70,7 +71,7 @@ def post():
 
 def report():
     try:
-        db(db.news.id==request.args[0]).update(flagged=True)
+        db(db.post.id==request.args[0]).update(flagged=True)
         session.flash='thanks for your feedback'
     except:
         session.flash='internal error'
@@ -79,28 +80,28 @@ def report():
 def delete():
     if not session.authorized: redirect(request.env.http_referer)
     try:
-        news=db(db.news.id==request.args[0]).select()[0]
-        if news.author==session.authorized:
-            db(db.news.id==request.args[0]).delete()
-        session.flash='news item deleted'
+        post=db(db.post.id==request.args[0]).select()[0]
+        if post.author==session.authorized:
+            db(db.post.id==request.args[0]).delete()
+        session.flash='Post item deleted'
     except:
         session.flash='internal error'
-    redirect(URL(r=request,f='index',args=[news.category]))
+    redirect(URL(r=request,f='index',args=[post.category]))
 
 def vote():
     if not session.authorized: redirect(request.env.http_referer)
-    news=db(db.news.id==request.args[1]).select()[0]
+    post=db(db.post.id==request.args[1]).select()[0]
     if request.args[0]=='up':
-       news.update_record(score=news.score+1)
+       post.update_record(score=post.score+1)
     elif request.args[0]=='down':
-       news.update_record(score=news.score-1)
+       post.update_record(score=post.score-1)
     redirect(request.env.http_referer)
 
 def permalink():
     try: comment=db(db.comment.id==request.args[0]).select()[0]
     except: redirect(request.env.http_referer)
-    comments=db(db.comment.news==comment.news).select(orderby=db.comment.score)
-    news=comment.news
+    comments=db(db.comment.post==comment.post).select(orderby=db.comment.score)
+    post=comment.post
     items=[]
     tree={}
     forms={}
@@ -113,7 +114,7 @@ def permalink():
            f=SQLFORM(db.comment,fields=['body'],labels={'body':''})
            f.vars.author=session.authorized          
            f.vars.author_alias=session.alias
-           f.vars.news=news
+           f.vars.post=post
            f.vars.parente=c.id
            if f.accepts(request.vars,formname=str(c.id)):
               session.flash='comment posted'
@@ -146,19 +147,19 @@ def person():
 
 
 def comments():
-    try: news=int(request.args[0])
+    try: post=int(request.args[0])
     except: redirect(URL(r=request,f='index'))
     if session.authorized:
         form=SQLFORM(db.comment,fields=['body'],labels={'body':''})
         form.vars.author=session.authorized
         form.vars.author_alias=session.alias
-        form.vars.news=news
+        form.vars.post=post
         if form.accepts(request.vars,formname='0'): 
             response.flash='comment posted'
     else: form=None
     try:
-        item=db(db.news.id==news).select()[0]
-        comments=db(db.comment.news==news).select(orderby=~db.comment.score)
+        item=db(db.post.id==post).select()[0]
+        comments=db(db.comment.post==post).select(orderby=~db.comment.score)
     except: redirect(URL(r=request,f='index'))
     items=[]
     tree={}
@@ -170,7 +171,7 @@ def comments():
            f=SQLFORM(db.comment,fields=['body'],labels={'body':''})
            f.vars.author=session.authorized          
            f.vars.author_alias=session.alias
-           f.vars.news=news
+           f.vars.post=post
            f.vars.parente=c.id
            if f.accepts(request.vars,formname=str(c.id)):
               session.flash='comment posted'
@@ -188,7 +189,7 @@ def edit_comment():
     form=SQLFORM(db.comment,comment,fields=['body'],showid=False,deletable=True,labels={'body':'Comment'})
     if form.accepts(request.vars,session):
         session.flash='comment edited'
-        redirect(URL(r=request,f='comments',args=[comment.news]))
+        redirect(URL(r=request,f='comments',args=[comment.post]))
     return dict(form=form)
 
 ### todo:

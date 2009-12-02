@@ -6,10 +6,10 @@
 [{{=A(s,_href=URL(r=request,args=[category,s,page]))}}]
 {{pass}}
 {{if page>0:}}[{{=A('prev',_href=URL(r=request,args=[category,sort,page-1]))}}]{{pass}}
-{{if page<3 and len(news)>50:}}[{{=A('next',_href=URL(r=request,args=[category,sort,page+1]))}}]{{pass}}
+{{if page<3 and len(post)>50:}}[{{=A('next',_href=URL(r=request,args=[category,sort,page+1]))}}]{{pass}}
 
 <table>
-{{for k,item in enumerate(news):}}{{if k==50: continue}}
+{{for k,item in enumerate(post):}}{{if k==50: continue}}
 <tr><td>
   <table border="0" cellpadding="0" cellspacing="0">
   <tr><td style="height:10px">{{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote',args=['up',item.id]))}}</td></tr>

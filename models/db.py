@@ -26,11 +26,20 @@ db.category.name.requires=[IS_MATCH('[a-z_]+'),
                            IS_NOT_IN_DB(db,db.category.name)]
 db.category.description.requires=IS_NOT_EMPTY()
 
-db.define_table('news',
+db.define_table('tag',
+    SQLField('name'),
+    SQLField('description','text'))
+
+db.tag.name.requires=[IS_MATCH('[a-z_]+'),
+                      IS_NOT_IN_DB(db,db.tag.name)]
+db.tag.description.requires=IS_NOT_EMPTY()
+
+db.define_table('post',
    SQLField('hotness','double',default=1.0),
    SQLField('clicks','integer',default=1),
    SQLField('score','integer',default=1),
    SQLField('post_time','double',default=now),
+   SQLField('content','text'),
    SQLField('comments','integer',default=0),
    SQLField('category'),
    SQLField('author',db.person),
@@ -39,9 +48,9 @@ db.define_table('news',
    SQLField('title',length=128),
    SQLField('flagged','boolean',default=False))
 
-db.news.url.requires=[IS_NOT_EMPTY()]
-db.news.category.requires=IS_IN_DB(db,db.category.name)
-db.news.title.requires=IS_NOT_EMPTY()
+db.post.url.requires=[IS_NOT_EMPTY()]
+db.post.category.requires=IS_IN_DB(db,db.category.name)
+db.post.title.requires=IS_NOT_EMPTY()
 
 db.define_table('comment',
    SQLField('score','integer',default=1),
@@ -49,7 +58,7 @@ db.define_table('comment',
    SQLField('author',db.person),
    SQLField('author_alias'),
    SQLField('parente','integer',default=0),
-   SQLField('news',db.news),
+   SQLField('post',db.post),
    SQLField('body','text'),
    SQLField('flagged','boolean',default=False))
 
