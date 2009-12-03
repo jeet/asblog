@@ -8,6 +8,26 @@ try:
 except:
     db=SQLDB()
 
+from gluon.storage import Storage
+
+settings=Storage()
+settings.mode='smart'
+settings.title='Ajay Maurya'
+settings.subtitle='Thoughts'
+settings.author='Jeet'
+settings.description=''
+settings.keywords=''
+settings.host_url='http://ajaymaurya.com'
+settings.email_verification=False
+settings.email_server='smtp.gmail.com:587'
+settings.email_auth=None # or 'username:password'
+settings.email_sender='you@gmail.com'
+settings.administrator_emails=[]
+settings.rss_procedures=[]
+settings.exposed_procedures=[]
+settings.xmlrpc_procedures=[]
+settings.json_procedures=[]
+
 db.define_table('person',
                 SQLField('alias'),
                 SQLField('email'),
@@ -15,8 +35,8 @@ db.define_table('person',
                 SQLField('post_time','double',default=now),
                 SQLField('favorites','text',default='|'))
 
-db.person.alias.requires=[IS_NOT_EMPTY(), IS_NOT_IN_DB(db,db.person.alias)]
-db.person.email.requires=[IS_EMAIL(), IS_NOT_IN_DB(db,db.person.email)]
+#db.person.alias.requires=[IS_NOT_EMPTY(), IS_NOT_IN_DB(db,db.person.alias)]
+#db.person.email.requires=[IS_EMAIL(), IS_NOT_IN_DB(db,db.person.email)]
 
 db.define_table('category',
                 SQLField('name'),
