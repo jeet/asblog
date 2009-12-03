@@ -4,6 +4,7 @@ if not session.categories:
     session.categories=[r.name for r in db().select(db.category.ALL)]
 
 def register():
+    admin_required()
     form=SQLFORM(db.person,fields=['alias', 'email','password'])
     if form.accepts(request.vars,session):
     #        session.authorized=form.vars.id
@@ -57,13 +58,15 @@ def bookmark():
     item.update_record(clicks=item.clicks+1)
     redirect(item.url)
 
-##Commented  logged in     
+##Commented  logged in
+
 def post():
-    if not session.authorized:
-        redirect(URL(r=request,f='login'))
+
+    admin_required()
     form=SQLFORM(db.post,fields=['url','title','category','content'])
     form.vars.author=session.authorized
     form.vars.author_alias=session.alias
+
     if form.accepts(request.vars,session):
         session.flash='news posted'
         redirect(URL(r=request,f='index',args=[form.vars.category]))
@@ -78,7 +81,8 @@ def report():
     redirect(request.env.http_referer)
 
 def delete():
-    if not session.authorized: redirect(request.env.http_referer)
+    admin_required()
+    #    if not session.authorized: redirect(request.env.http_referer)
     try:
         post=db(db.post.id==request.args[0]).select()[0]
         if post.author==session.authorized:

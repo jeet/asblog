@@ -33,6 +33,7 @@ db.define_table('person',
                 SQLField('email'),
                 SQLField('password','password'),
                 SQLField('post_time','double',default=now),
+                SQLField('global_admin','boolean',default=False),
                 SQLField('favorites','text',default='|'))
 
 #db.person.alias.requires=[IS_NOT_EMPTY(), IS_NOT_IN_DB(db,db.person.alias)]
@@ -64,6 +65,7 @@ db.define_table('post',
                 SQLField('clicks','integer',default=1),
                 SQLField('post_time','double',default=now),
                 SQLField('content','text'),
+                SQLField('text_html','text'),
                 SQLField('comments','integer',default=0),
                 SQLField('category'),
                 SQLField('author',db.person),
@@ -89,14 +91,21 @@ db.define_table('feeback',
                 SQLField('email')
         )
 
+db.define_table('post_categories',
+                SQLField('post_id','integer'),
+                SQLField('category_id','integer')
+        )
+
 db.define_table('comment',
                 SQLField('score','integer',default=1),
                 SQLField('post_time','double',default=now),
-                SQLField('author',db.person),
-                SQLField('author_alias'),
+                SQLField('author'),
+                SQLField('email'),
+                SQLField('web'),
                 SQLField('parente','integer',default=0),
                 SQLField('post',db.post),
                 SQLField('body','text'),
+                SQLField('flagged','boolean',default=False),
                 SQLField('flagged','boolean',default=False))
 
 db.comment.body.requires=IS_NOT_EMPTY()
@@ -108,3 +117,6 @@ if len(db().select(db.category.ALL))==0:
     db.category.insert(name='science',description=''),
     db.category.insert(name='Ruby on Rails',description=''),
     db.category.insert(name='Python',description='')
+
+if len(db().select(db.person.ALL))==0:
+    db.person.insert(alias='jeet',email='jeet@example.com',password='password',global_admin=True)
