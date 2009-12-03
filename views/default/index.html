@@ -18,7 +18,9 @@
                         {{=A(IMG(_src=URL(r=request,c='static',f='up.png')),_href=URL(r=request,f='vote',args=['up',item.id]))}}
                     </td>
                 </tr>
-                <tr height="10px"></tr>
+                <tr height="10px">
+                    <td class="score"></td>
+                </tr>
                 <tr>
                     <td>
                         {{=A(IMG(_src=URL(r=request,c='static',f='down.png')),_href=URL(r=request,f='vote',args=['down',item.id]))}}
